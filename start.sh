@@ -39,6 +39,17 @@ fi
 mkdir -p "$MODELS"/{diffusion_models,text_encoders,vae,loras,checkpoints,controlnet,upscale_models,embeddings,clip_vision} \
          "$WS/ComfyUI/output" "$WS/ComfyUI/input" "$WS/ComfyUI/user"
 
+# Bundled workflows → ComfyUI's Workflows panel. Never overwrites a workflow
+# you've edited and saved under the same name.
+WF_DIR="$WS/ComfyUI/user/default/workflows"
+mkdir -p "$WF_DIR"
+for wf in /opt/default_workflows/*.json; do
+  [[ -e "$wf" ]] || continue
+  if [[ ! -e "$WF_DIR/$(basename "$wf")" ]]; then
+    cp "$wf" "$WF_DIR/" && echo "[start] Added workflow: $(basename "$wf")"
+  fi
+done
+
 # ---- Build the file list ----------------------------------------------------
 FILES=()
 case "$MOSS_PRECISION" in

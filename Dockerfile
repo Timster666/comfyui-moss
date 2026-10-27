@@ -38,6 +38,8 @@ RUN pip install "huggingface_hub[hf_xet]"
 RUN pip install jupyterlab
 
 COPY extra_model_paths.yaml /opt/ComfyUI/extra_model_paths.yaml
+# Workflows bundled with the image (put .json files in the repo's workflows/ folder)
+COPY workflows/ /opt/default_workflows/
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
