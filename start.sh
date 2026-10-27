@@ -8,14 +8,14 @@ REPO="Comfy-Org/MOSS-Image"
 
 # ---- Settings (override as RunPod environment variables) --------------------
 MOSS_VARIANT="${MOSS_VARIANT:-sft}"          # sft | base | both
-MOSS_PRECISION="${MOSS_PRECISION:-bf16}"     # bf16 | int8
-TEXT_ENCODER="${TEXT_ENCODER:-int8}"         # bf16 | int8 | w4a8
-MOSS_VAE="${MOSS_VAE:-full}"                 # full | small | both
+MOSS_PRECISION="${MOSS_PRECISION:-int8}"     # int8 | bf16
+TEXT_ENCODER="${TEXT_ENCODER:-w4a8}"         # w4a8 | int8 | bf16
+MOSS_VAE="${MOSS_VAE:-small}"                # small | full | both
 DOWNLOAD_ALL="${DOWNLOAD_ALL:-false}"        # true = grab the whole repo (~49 GB)
 SKIP_DOWNLOAD="${SKIP_DOWNLOAD:-false}"
 COMFY_ARGS="${COMFY_ARGS:-}"                 # extra flags, e.g. --lowvram
 ENABLE_JUPYTER="${ENABLE_JUPYTER:-true}"     # JupyterLab on port 8888
-JUPYTER_PASSWORD="${JUPYTER_PASSWORD:-}"     # login token; empty = no login
+JUPYTER_PASSWORD="${JUPYTER_PASSWORD:-}"     # optional login token; empty = opens with no login
 # -----------------------------------------------------------------------------
 
 # SSH (RunPod injects PUBLIC_KEY from your account settings)
@@ -30,8 +30,9 @@ fi
 if [[ "$ENABLE_JUPYTER" == "true" ]]; then
   echo "[start] Starting JupyterLab on port 8888"
   nohup jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root \
-    --ServerApp.token="$JUPYTER_PASSWORD" --ServerApp.password='' \
-    --ServerApp.allow_origin='*' --ServerApp.root_dir="$WS" \
+    --IdentityProvider.token="$JUPYTER_PASSWORD" --ServerApp.password='' \
+    --ServerApp.allow_origin='*' --ServerApp.allow_remote_access=True \
+    --ServerApp.disable_check_xsrf=True --ServerApp.root_dir="$WS" \
     > /var/log/jupyter.log 2>&1 &
 fi
 

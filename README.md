@@ -29,7 +29,7 @@ RunPod console → **My Templates → New Template**:
 | Container disk | 30 GB |
 | Volume disk | 60 GB (≈110 GB if `DOWNLOAD_ALL=true`) |
 | Volume mount path | `/workspace` |
-| Expose HTTP ports | `8188` |
+| Expose HTTP ports | `8188` (ComfyUI), `8888` (JupyterLab) |
 | Expose TCP ports | `22` |
 
 Add environment variables as needed (all optional, defaults shown below).
@@ -37,7 +37,7 @@ For gated/rate-limited downloads add `HF_TOKEN`.
 
 ## 3. Deploy
 
-Deploy a pod with the template. The first boot downloads ~20 GB with the defaults —
+Deploy a pod with the template. The first boot downloads ~13 GB with the defaults —
 watch progress in the pod's logs. When you see `Starting ComfyUI on port 8188`,
 click **Connect → HTTP 8188**.
 
@@ -50,15 +50,17 @@ Then load MOSS-Image in ComfyUI: `Load Diffusion Model` → `moss_image_sft_*`,
 | Variable | Default | Options |
 |---|---|---|
 | `MOSS_VARIANT` | `sft` | `sft` (fine-tuned, best for prompting), `base`, `both` |
-| `MOSS_PRECISION` | `bf16` | `bf16` (10.2 GB), `int8` (5.4 GB) |
-| `TEXT_ENCODER` | `int8` | `bf16` (19.3 GB), `int8` (9.75 GB), `w4a8` (7.3 GB) |
-| `MOSS_VAE` | `full` | `full`, `small`, `both` |
+| `MOSS_PRECISION` | `int8` | `int8` (5.4 GB), `bf16` (10.2 GB) |
+| `TEXT_ENCODER` | `w4a8` | `w4a8` (7.3 GB), `int8` (9.75 GB), `bf16` (19.3 GB) |
+| `MOSS_VAE` | `small` | `small`, `full`, `both` |
 | `DOWNLOAD_ALL` | `false` | `true` downloads every file in the repo (~49 GB) |
 | `SKIP_DOWNLOAD` | `false` | `true` starts ComfyUI without checking models |
 | `COMFY_ARGS` | *(empty)* | Extra ComfyUI flags, e.g. `--lowvram` |
+| `ENABLE_JUPYTER` | `true` | `false` turns JupyterLab off |
+| `JUPYTER_PASSWORD` | *(empty)* | Empty = JupyterLab opens with no login. Set one if you want a login (anyone with the pod URL can otherwise open it) |
 
-**GPU suggestions:** a 48 GB card (A6000, L40S) runs the defaults comfortably;
-on 24 GB cards (RTX 4090/3090) use `MOSS_PRECISION=int8` and `TEXT_ENCODER=w4a8`.
+**GPU suggestions:** the defaults (int8 model, w4a8 text encoder, small VAE — matching
+ComfyUI's MOSS-Image template) fit 24 GB cards like the RTX 4090/3090.
 The image supports RTX 5090 / Blackwell.
 
 ## Where things live
